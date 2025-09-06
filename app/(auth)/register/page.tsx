@@ -12,18 +12,42 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const validatePasswordStrength = (password: string) => {
+    // Minimum 8 chars, at least one letter and one number
+    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+
     const formData = new FormData(event.currentTarget);
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
+    const name = (formData.get('name') as string).trim();
+    const email = (formData.get('email') as string).trim();
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
+    if (!name) {
+      setError('Full name is required.');
+      setLoading(false);
+      return;
+    }
+
+    if (!email) {
+      setError('Email is required.');
+      setLoading(false);
+      return;
+    }
+
+    if (!validatePasswordStrength(password)) {
+      setError('Password must be at least 8 characters and contain letters and numbers.');
+      setLoading(false);
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Passwords do not match.');
       setLoading(false);
       return;
     }
@@ -55,6 +79,7 @@ export default function RegisterPage() {
                 type="text" 
                 placeholder="John Doe" 
                 required
+                autoComplete="name"
               />
             </div>
             <div className="space-y-2">

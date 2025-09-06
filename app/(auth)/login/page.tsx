@@ -7,10 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { login } from '@/app/lib/actions/auth-actions';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,13 +23,31 @@ export default function LoginPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    const result = await login({ email, password });
-
-    if (result?.error) {
-      setError(result.error);
+    if (!password) {
+      setError('Password is required.');
       setLoading(false);
-    } else {
-      window.location.href = '/polls'; // Full reload to pick up session
+      return;
+    }
+
+    try {
+      const result = await login({ email, password });
+      
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        // If login was successful, the server action should handle redirect
+        // But we'll also refresh the client-side state
+        router.refresh();
+      }
+    } catch (error: any) {
+      // This might catch the redirect exception, which is normal
+      if (error.message.includes('NEXT_REDIRECT')) {
+        // Redirect is happening, do nothing
+      } else {
+        setError(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/app/lib/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { deletePoll } from "@/app/lib/actions/poll-actions";
+import { useState } from "react";
 
 interface Poll {
   id: string;
@@ -18,10 +19,21 @@ interface PollActionsProps {
 
 export default function PollActions({ poll }: PollActionsProps) {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const handleDelete = async () => {
+    if (!user || user.id !== poll.user_id) return;
     if (confirm("Are you sure you want to delete this poll?")) {
-      await deletePoll(poll.id);
-      window.location.reload();
+      setLoading(true);
+      setError(null);
+      const result = await deletePoll(poll.id);
+      setLoading(false);
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        window.location.reload();
+      }
     }
   };
 
@@ -44,10 +56,18 @@ export default function PollActions({ poll }: PollActionsProps) {
           <Button asChild variant="outline" size="sm">
             <Link href={`/polls/${poll.id}/edit`}>Edit</Link>
           </Button>
-          <Button variant="destructive" size="sm" onClick={handleDelete}>
-            Delete
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleDelete}
+            disabled={loading}
+          >
+            {loading ? "Deleting..." : "Delete"}
           </Button>
         </div>
+      )}
+      {error && (
+        <div className="p-2 text-red-500 text-sm">{error}</div>
       )}
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { LoginFormData, RegisterFormData } from '../types';
+import { redirect } from 'next/navigation';
 
 export async function login(data: LoginFormData) {
   const supabase = await createClient();
@@ -15,8 +16,8 @@ export async function login(data: LoginFormData) {
     return { error: error.message };
   }
 
-  // Success: no error
-  return { error: null };
+  // Use redirect instead of returning
+  redirect('/polls');
 }
 
 export async function register(data: RegisterFormData) {
@@ -29,6 +30,7 @@ export async function register(data: RegisterFormData) {
       data: {
         name: data.name,
       },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
     },
   });
 
