@@ -1,7 +1,57 @@
-# ALX Polly Security Audit
+# ALX Polly - Real-time Polling Application
+A modern, full-stack polling application built with Next.js 15, Supabase, and TypeScript. Create polls, share them, and view real-time results with a clean, responsive interface.
+
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 15, React 18, TypeScript
+- **Styling**: Tailwind CSS, Shadcn/UI components
+- **Database**: Supabase PostgreSQL
+- **Authentication**: Supabase Auth with secure session management
+- **Real-time**: Supabase Realtime subscriptions
+- **Deployment**: Vercel-ready configuration
+
+## 📋 Project Overview
+
+ALX Polly allows users to:
+- ✅ Create polls with custom questions and multiple options
+- ✅ Vote on polls (authenticated or anonymous voting)
+- ✅ View real-time poll results with live updates
+- ✅ Manage personal polls (view, update, delete)
+- ✅ Secure authentication with email/password
+- ✅ Responsive design for mobile and desktop
+
+## 🔧 API Reference
+ ## Server Actions
+- createPoll(formData: FormData)
+Creates a new poll with validation and authentication checks.
+
+- getUserPolls()
+Retrieves all polls created by the authenticated user.
+
+- getPollById(id: string)
+Fetches a specific poll by its UUID.
+
+- submitVote(pollId: string, optionIndex: number)
+Submits a vote for a poll option with duplicate prevention.
+
+- deletePoll(id: string)
+Deletes a poll and its associated votes (owner only).
+
+- updatePoll(pollId: string, formData: FormData)
+Updates an existing poll's question and options (owner only).
+
+## Environment Variables for Production
+Ensure these are set in your deployment platform:
+
+- NEXT_PUBLIC_SUPABASE_URL
+
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+- SUPABASE_URL
+
+- SUPABASE_ANON_KEY
 
 ## Vulnerabilities & Fixes
-
 ### 1. Authentication
 
 - **Weak Passwords:**  
@@ -53,6 +103,12 @@
 - Use generic error messages for clients.
 - Move all sensitive data fetching to server components.
 
+
+## Verification Steps:
+
+1. **Run the application** to ensure documentation matches actual functionality:
+   ```bash
+   pnpm run dev
 ---
 
 For more details, see code comments and Server Action implementations.
