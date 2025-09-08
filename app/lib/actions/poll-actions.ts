@@ -9,6 +9,7 @@ export async function createPoll(formData: FormData) {
 
   const question = formData.get("question") as string;
   const options = formData.getAll("options").filter(Boolean) as string[];
+  const expires_at = formData.get("expires_at") as string | null;
 
   if (!question || options.length < 2) {
     return { error: "Please provide a question and at least two options." };
@@ -31,6 +32,7 @@ export async function createPoll(formData: FormData) {
       user_id: user.id,
       question,
       options,
+      expires_at,
     },
   ]);
 
@@ -76,6 +78,21 @@ export async function getPollById(id: string) {
 // SUBMIT VOTE
 export async function submitVote(pollId: string, optionIndex: number) {
   const supabase = await createClient();
+
+  const { data: poll, error: pollError } = await supabase
+    .from("polls")
+    .select("expires_at")
+    .eq("id", pollId)
+    .single();
+
+  if (pollError) {
+    return { error: "Poll not found." };
+  }
+
+  if (poll.expires_at && new Date(poll.expires_at) < new Date()) {
+    return { error: "This poll has expired." };
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
