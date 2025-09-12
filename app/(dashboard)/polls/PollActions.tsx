@@ -25,7 +25,7 @@ export default function PollActions({ poll }: PollActionsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async () => {
-    if (!user || user.id !== poll.user_d) return;
+    if (!user || user.id !== poll.user_id) return;
     if (confirm('Are you sure you want to delete this poll?')) {
       setLoading(true);
       setError(null);
